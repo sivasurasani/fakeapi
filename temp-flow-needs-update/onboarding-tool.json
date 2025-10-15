@@ -1,0 +1,1598 @@
+{
+  "actions": [
+    {
+      "url": "https://cloud1-renesas-stg-api.micro.ai/api/v2/device/createDeviceProfile?EGid=",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": true,
+      "waitForUserResponse": false,
+      "requestBody": "{\"devicePlanID\":\"9Rg66LTkGTJsE9pF3vVZTQ==\",\"BusinessVerticalPlatforms\":6,\"paymentMethodID\":\"6smajzhf\",\"tierID\":\"pAiS8A$$$ROSHMzPkN1lhjgw==\",\"name\":{{profile_name}},\"shortDescription\":\"Default Profile\",\"tags\":null,\"AssetTypeId\":10,\"UseCase\":\"2\",\"technologyId\":\"1\",\"deviceType\":\"-1\",\"deviceConnectivityType\":1,\"frequency\":5,\"rate\":2,\"imageUrl\":\"deviceprofile/cloud-device-img.png\",\"dataSchemas\":\"{\\\"General\\\":{\\\"Device\\\":\\\"AtomML+\\\",\\\"FwVersion\\\":\\\"1.2.3\\\",\\\"APIkey\\\":\\\"{profilekey}\\\",\\\"Activation_Base_Url\\\":\\\"https://cloud1-api.micro.ai\\\",\\\"Default_LAT\\\":0,\\\"Default_LON\\\":0,\\\"Location_Name\\\":\\\"Dallas\\\"},\\\"AI_general\\\":{\\\"TrainingSecs\\\":{{training_secs}},\\\"SplitCounter\\\":{{split_counter}},\\\"AiFeedRate\\\":1000,\\\"SmallThreshold\\\":0.01,\\\"InitialPeriodSecs\\\":15,\\\"HealthScoreDelay\\\":10,\\\"BoundsLimit\\\":false,\\\"IsBuildModel\\\":false},\\\"Importer\\\":{\\\"Type\\\":\\\"none\\\"},\\\"Health_groups\\\":[{\\\"GroupID\\\":1,\\\"GroupName\\\":\\\"Group 1\\\",\\\"Hysteresis\\\":20,\\\"Hysteresis2\\\":20,\\\"Aging\\\":0.9,\\\"Memory\\\":0.95,\\\"Noise\\\":0.05,\\\"Intensity\\\":2.5,\\\"DTNM\\\":40,\\\"Advanced\\\":{\\\"RL\\\":1000,\\\"PdM\\\":1,\\\"K\\\":0.02},\\\"RootCause\\\":{\\\"Enabled\\\":false,\\\"CycleTagType\\\":\\\"Accumulative\\\",\\\"CycleTagName\\\":\\\"CycleTime\\\"}}],\\\"Channels\\\":[{\\\"ChanId\\\":1,\\\"ChanName\\\":\\\"test\\\",\\\"Group\\\":1,\\\"GroupRank\\\":1,\\\"SampleRate\\\":1000,\\\"FE_order\\\":[],\\\"InputLocation\\\":\\\"127.0.0.1:5005\\\",\\\"AILocation\\\":\\\"127.0.0.1:5005\\\",\\\"SensID\\\":1,\\\"SensName\\\":\\\"test\\\",\\\"MeanCalGain\\\":0.9,\\\"StdCalGain\\\":0.9,\\\"SigmaWarn\\\":3,\\\"SigmaAlert\\\":5}],\\\"Y_Code\\\":{\\\"Mode\\\":0,\\\"DeviceName\\\":\\\" test system\\\",\\\"OutputLocation\\\":\\\"127.0.0.1:5005\\\",\\\"Mode_Continuous\\\":{\\\"Sync_freq\\\":5000,\\\"Max_async_freq\\\":1000},\\\"Mode_Storage\\\":{\\\"Max_Rows\\\":50,\\\"Max_Secs\\\":600,\\\"Post_Event_Send_Time_secs\\\":600,\\\"Sync_freq\\\":5000,\\\"Max_async_freq\\\":1000},\\\"LaunchpadExporter\\\":{\\\"Enabled\\\":true},\\\"ExternalExporter\\\":{\\\"ExternalExporterType\\\":\\\"Off\\\",\\\"Https_Post_Endpoint\\\":\\\"https://webhook.site/4b395597-64aa-4ebb-859b-a66faf222a3e\\\",\\\"Output_Redis_Endpoint\\\":\\\"192.168.2.171:5005\\\",\\\"Output_MQTT\\\":{\\\"Endpoint\\\":\\\"127.0.0.1\\\",\\\"Port\\\":1884,\\\"Username\\\":\\\"\\\",\\\"Password\\\":\\\"\\\",\\\"topic_prefix\\\":\\\"data/\\\"}},\\\"AIStudioExporter\\\":{\\\"Mode\\\":0,\\\"Output_MQTT\\\":{\\\"Endpoint\\\":\\\"aistudio-mqtt.micro.ai\\\",\\\"Port\\\":5003,\\\"Username\\\":\\\"\\\",\\\"Password\\\":\\\"\\\",\\\"topic_prefix\\\":\\\"exporter-7dd0d\\\"}},\\\"Email_Notification_Exporter\\\":{\\\"smtp_host\\\":\\\"email-smtp.us-west-2.amazonaws.com\\\",\\\"smtp_port\\\":587,\\\"smtp_username\\\":\\\"\\\",\\\"smtp_password\\\":\\\"\\\",\\\"smtp_from_emailid\\\":\\\"\\\",\\\"smtp_to_email_list\\\":\\\"\\\"}}}\",\"ConfigID\":\"5\",\"PromoCode\":\"\"}",
+      "headers": {
+        "accessToken": "{{access_token}}"
+      },
+      "inputs": [
+        {
+          "name": "access_token",
+          "description": "Launchpad access token",
+          "type": "AUTHENTICATION",
+          "authenticationId": 10,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "profile_name",
+          "description": "Name of the device profile to create",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "training_secs",
+          "description": "AI_general.TrainingSecs",
+          "type": "NUMBER",
+          "authenticationId": null,
+          "defaultValue": 300,
+          "required": true
+        },
+        {
+          "name": "split_counter",
+          "description": "AI_general.SplitCounter",
+          "type": "NUMBER",
+          "authenticationId": null,
+          "defaultValue": 20,
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "name": "profile_id",
+          "description": "Created profile ID",
+          "scope": "BODY",
+          "path": "$.profileID"
+        },
+        {
+          "name": "profile_key",
+          "description": "API key for the profile",
+          "scope": "BODY",
+          "path": "$.profilekey"
+        }
+      ],
+      "id": 60,
+      "name": "Create Device Profile (Minimal)",
+      "description": "Creates a device profile using Launchpad defaults; only requires profile name, TrainingSecs, and SplitCounter."
+    },
+    {
+      "url": "http://localhost:8070/mock/register",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": "{\"email\": {{email}}, \"session_id\": {{session_id}}}",
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [
+        {
+          "name": "email",
+          "description": "User email",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "session_id",
+          "description": "Session unique id",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": false
+        }
+      ],
+      "outputs": [
+        {
+          "name": "account_exists",
+          "description": "",
+          "scope": "BODY",
+          "path": "$.accountExists"
+        },
+        {
+          "name": "should_login",
+          "description": "",
+          "scope": "BODY",
+          "path": "$.shouldLogin"
+        },
+        {
+          "name": "is_premature",
+          "description": "",
+          "scope": "BODY",
+          "path": "$.isPremature"
+        },
+        { "name": "otp", "description": "", "scope": "BODY", "path": "$.otp" }
+      ],
+      "id": 201,
+      "name": "Register Account (Mock)",
+      "description": "Register or resend OTP"
+    },
+    {
+      "url": "http://localhost:8070/mock/validate",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": "{\"email\": {{email}}, \"otp\": {{otp}}}",
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [
+        {
+          "name": "email",
+          "description": "User email",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "otp",
+          "description": "OTP code",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "name": "profile_key",
+          "description": "Profile key",
+          "scope": "BODY",
+          "path": "$.profileKey"
+        }
+      ],
+      "id": 202,
+      "name": "Validate OTP (Mock)",
+      "description": "Validate OTP and create/retrieve profile"
+    },
+    {
+      "url": "http://localhost:8070/mock/spawn",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": "{\"profileKey\": {{profile_key}}, \"mode\": {{mode}}, \"sessionId\": {{session_id}}, \"sessionExpiry\": {{session_expiry}}, \"config\": {{device_config}}}",
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [
+        {
+          "name": "profile_key",
+          "description": "Profile key",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "mode",
+          "description": "Onboarding mode",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": "\"demo\"",
+          "required": true
+        },
+        {
+          "name": "session_id",
+          "description": "Session id",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": false
+        },
+        {
+          "name": "session_expiry",
+          "description": "Expiry ms",
+          "type": "NUMBER",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": false
+        },
+        {
+          "name": "device_config",
+          "description": "Config JSON",
+          "type": "OBJECT",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": false
+        }
+      ],
+      "outputs": [
+        {
+          "name": "device_id",
+          "description": "Device Id",
+          "scope": "BODY",
+          "path": "$.deviceId"
+        },
+        {
+          "name": "already_active",
+          "description": "Already Active",
+          "scope": "BODY",
+          "path": "$.alreadyActive"
+        },
+        {
+          "name": "broker_endpoint",
+          "description": "Broker",
+          "scope": "BODY",
+          "path": "$.brokerEndpoint"
+        },
+        {
+          "name": "broker_port",
+          "description": "Broker",
+          "scope": "BODY",
+          "path": "$.brokerPort"
+        },
+        {
+          "name": "topic",
+          "description": "Topic",
+          "scope": "BODY",
+          "path": "$.topic"
+        },
+        {
+          "name": "username",
+          "description": "Username",
+          "scope": "BODY",
+          "path": "$.username"
+        },
+        {
+          "name": "password",
+          "description": "Password",
+          "scope": "BODY",
+          "path": "$.password"
+        }
+      ],
+      "id": 203,
+      "name": "Spawn MI Container (Mock)",
+      "description": "Spawn demo or live container"
+    },
+    {
+      "url": "http://localhost:8070/mock/profiles",
+      "urlParams": {},
+      "method": "GET",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": null,
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "profiles",
+          "description": "Profiles",
+          "scope": "BODY",
+          "path": "$.profiles"
+        }
+      ],
+      "id": 205,
+      "name": "List Profiles (Mock)",
+      "description": "List user profiles"
+    },
+    {
+      "url": "http://localhost:8070/mock/profiles",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": "{\"accessToken\": {{access_token}}, \"profileName\": {{profile_name}}, \"trainingSeconds\": {{training_secs}}, \"daysToMaintenance\": {{days_to_maint}}, \"cycleDuration\": {{cycle_secs}}}",
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [
+        {
+          "name": "access_token",
+          "description": "Launchpad access token",
+          "type": "AUTHENTICATION",
+          "authenticationId": 10,
+          "defaultValue": null,
+          "required": false
+        },
+        {
+          "name": "profile_name",
+          "description": "Profile Name",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "training_secs",
+          "description": "Training seconds",
+          "type": "NUMBER",
+          "authenticationId": null,
+          "defaultValue": 100,
+          "required": true
+        },
+        {
+          "name": "days_to_maint",
+          "description": "Days to Maintenance",
+          "type": "NUMBER",
+          "authenticationId": null,
+          "defaultValue": 30,
+          "required": true
+        },
+        {
+          "name": "cycle_secs",
+          "description": "Cycle Duration",
+          "type": "NUMBER",
+          "authenticationId": null,
+          "defaultValue": 10,
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "name": "profile_key",
+          "description": "Profile key",
+          "scope": "BODY",
+          "path": "$.profileKey"
+        }
+      ],
+      "id": 206,
+      "name": "Create Profile (Mock)",
+      "description": "Create a profile"
+    },
+    {
+      "url": "http://localhost:8070/mock/subscribe",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": "{\"userId\": {{user_id}}, \"accessToken\": {{access_token}}, \"email\": {{email}}, \"deviceId\": {{device_id}}}",
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [
+        {
+          "name": "user_id",
+          "description": "User id",
+          "type": "NUMBER",
+          "authenticationId": null,
+          "defaultValue": 314,
+          "required": true
+        },
+        {
+          "name": "access_token",
+          "description": "Launchpad access token",
+          "type": "AUTHENTICATION",
+          "authenticationId": 10,
+          "defaultValue": null,
+          "required": false
+        },
+        {
+          "name": "email",
+          "description": "Email",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "device_id",
+          "description": "Device id",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": false
+        }
+      ],
+      "outputs": [],
+      "id": 208,
+      "name": "Subscribe Notifications (Mock)",
+      "description": "Subscribe to device ticket notifications"
+    },
+    {
+      "url": "http://localhost:8070/mock/tickets",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": "{\"deviceId\": {{device_id}}, \"summary\": {{summary}}}",
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [
+        {
+          "name": "device_id",
+          "description": "Device id",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "summary",
+          "description": "Summary",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": "\"Test ticket\"",
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "name": "ticket_number",
+          "description": "Ticket number",
+          "scope": "BODY",
+          "path": "$.ticketNumber"
+        },
+        {
+          "name": "ticket_link",
+          "description": "Ticket link",
+          "scope": "BODY",
+          "path": "$.link"
+        }
+      ],
+      "id": 209,
+      "name": "Create Ticket (Mock)",
+      "description": "Create a ticket"
+    },
+    {
+      "url": "http://localhost:8070/mock/users",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": "{\"firstName\": {{first_name}}, \"lastName\": {{last_name}}, \"email\": {{email}}, \"phone\": {{phone}}, \"access\": {{access}}}",
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [
+        {
+          "name": "first_name",
+          "description": "First Name",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "last_name",
+          "description": "Last Name",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "email",
+          "description": "Email",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "phone",
+          "description": "Phone",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": false
+        },
+        {
+          "name": "access",
+          "description": "Access list",
+          "type": "ARRAY",
+          "authenticationId": null,
+          "defaultValue": ["Manage user"],
+          "required": false
+        }
+      ],
+      "outputs": [
+        {
+          "name": "user_id",
+          "description": "User Id",
+          "scope": "BODY",
+          "path": "$.userId"
+        }
+      ],
+      "id": 210,
+      "name": "Invite User (Mock)",
+      "description": "Invite user and send activation email"
+    },
+    {
+      "url": "http://localhost:8070/mock/validate-broker",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": "{\"profileKey\": {{profile_key}}, \"brokerEndpoint\": {{broker_endpoint}}, \"brokerPort\": {{broker_port}}}",
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [
+        {
+          "name": "profile_key",
+          "description": "Profile key",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "broker_endpoint",
+          "description": "Broker endpoint",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": "\"mqtt.micro.ai\"",
+          "required": false
+        },
+        {
+          "name": "broker_port",
+          "description": "Broker port",
+          "type": "NUMBER",
+          "authenticationId": null,
+          "defaultValue": 5002,
+          "required": false
+        }
+      ],
+      "outputs": [
+        {
+          "name": "can_connect",
+          "description": "Can Connect",
+          "scope": "BODY",
+          "path": "$.canConnect"
+        },
+        {
+          "name": "message",
+          "description": "Message",
+          "scope": "BODY",
+          "path": "$.message"
+        }
+      ],
+      "id": 211,
+      "name": "Validate Broker Connection (Mock)",
+      "description": "Validate broker connectivity"
+    },
+    {
+      "url": "http://localhost:8070/mock/validate-schema",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": "{\"profileKey\": {{profile_key}}, \"schema\": {{schema}}}",
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [
+        {
+          "name": "profile_key",
+          "description": "Profile key",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "schema",
+          "description": "Data schema",
+          "type": "OBJECT",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": false
+        }
+      ],
+      "outputs": [
+        {
+          "name": "is_valid",
+          "description": "Is Valid",
+          "scope": "BODY",
+          "path": "$.isValid"
+        },
+        {
+          "name": "message",
+          "description": "Message",
+          "scope": "BODY",
+          "path": "$.message"
+        },
+        {
+          "name": "suggested_schema",
+          "description": "Suggested Schema",
+          "scope": "BODY",
+          "path": "$.suggestedSchema"
+        }
+      ],
+      "id": 212,
+      "name": "Validate Schema (Mock)",
+      "description": "Validate data schema"
+    },
+    {
+      "url": "http://localhost:8070/mock/payment-plans",
+      "urlParams": {},
+      "method": "GET",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": null,
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "plans",
+          "description": "Payment Plans",
+          "scope": "BODY",
+          "path": "$.plans"
+        }
+      ],
+      "id": 213,
+      "name": "List Payment Plans (Mock)",
+      "description": "Get available payment plans"
+    },
+    {
+      "url": "http://localhost:8070/mock/process-payment",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": "{\"planId\": {{plan_id}}, \"cardNumber\": {{card_number}}, \"expiryMonth\": {{expiry_month}}, \"expiryYear\": {{expiry_year}}, \"cvv\": {{cvv}}, \"billingEmail\": {{billing_email}}}",
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [
+        {
+          "name": "plan_id",
+          "description": "Plan ID",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "card_number",
+          "description": "Card Number",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "expiry_month",
+          "description": "Expiry Month",
+          "type": "NUMBER",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "expiry_year",
+          "description": "Expiry Year",
+          "type": "NUMBER",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "cvv",
+          "description": "CVV",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "billing_email",
+          "description": "Billing Email",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "name": "transaction_id",
+          "description": "Transaction ID",
+          "scope": "BODY",
+          "path": "$.transactionId"
+        },
+        {
+          "name": "message",
+          "description": "Message",
+          "scope": "BODY",
+          "path": "$.message"
+        }
+      ],
+      "id": 214,
+      "name": "Process Payment (Mock)",
+      "description": "Process payment transaction"
+    },
+    {
+      "url": "http://localhost:8070/mock/dashboard/view",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": "{\"deviceId\": {{device_id}}, \"assetId\": {{asset_id}}}",
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [
+        {
+          "name": "device_id",
+          "description": "Device ID",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "asset_id",
+          "description": "Asset ID",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": false
+        }
+      ],
+      "outputs": [
+        {
+          "name": "dashboard_url",
+          "description": "Dashboard URL",
+          "scope": "BODY",
+          "path": "$.dashboardUrl"
+        },
+        {
+          "name": "widgets",
+          "description": "Widgets",
+          "scope": "BODY",
+          "path": "$.widgets"
+        }
+      ],
+      "id": 215,
+      "name": "Get Dashboard View (Mock)",
+      "description": "Get dashboard view for device"
+    },
+    {
+      "url": "http://localhost:8070/mock/dashboard/switch-channel",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": "{\"deviceId\": {{device_id}}, \"widgetId\": {{widget_id}}, \"fromChannel\": {{from_channel}}, \"toChannel\": {{to_channel}}}",
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [
+        {
+          "name": "device_id",
+          "description": "Device ID",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "widget_id",
+          "description": "Widget ID",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "from_channel",
+          "description": "From Channel",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "to_channel",
+          "description": "To Channel",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "name": "message",
+          "description": "Message",
+          "scope": "BODY",
+          "path": "$.message"
+        }
+      ],
+      "id": 216,
+      "name": "Switch Dashboard Channel (Mock)",
+      "description": "Switch sensor channel on dashboard widget"
+    },
+    {
+      "url": "http://localhost:8070/mock/dashboard/refresh",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": "{\"deviceId\": {{device_id}}}",
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [
+        {
+          "name": "device_id",
+          "description": "Device ID",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "name": "message",
+          "description": "Message",
+          "scope": "BODY",
+          "path": "$.message"
+        }
+      ],
+      "id": 217,
+      "name": "Refresh Dashboard (Mock)",
+      "description": "Refresh dashboard view"
+    },
+    {
+      "url": "http://localhost:8070/mock/metrics/query",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": "{\"deviceId\": {{device_id}}, \"metrics\": {{metrics}}, \"startTime\": {{start_time}}, \"endTime\": {{end_time}}}",
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [
+        {
+          "name": "device_id",
+          "description": "Device ID",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "metrics",
+          "description": "Metric names",
+          "type": "ARRAY",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "start_time",
+          "description": "Start Time",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "end_time",
+          "description": "End Time",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "name": "data",
+          "description": "Time-series data",
+          "scope": "BODY",
+          "path": "$.data"
+        }
+      ],
+      "id": 218,
+      "name": "Query Metrics (Mock)",
+      "description": "Query time-series metrics"
+    },
+    {
+      "url": "http://localhost:8070/mock/metrics/correlation",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": "{\"deviceId\": {{device_id}}, \"metric1\": {{metric1}}, \"metric2\": {{metric2}}, \"startTime\": {{start_time}}, \"endTime\": {{end_time}}}",
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [
+        {
+          "name": "device_id",
+          "description": "Device ID",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "metric1",
+          "description": "First Metric",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "metric2",
+          "description": "Second Metric",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "start_time",
+          "description": "Start Time",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "end_time",
+          "description": "End Time",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "name": "correlation",
+          "description": "Correlation value",
+          "scope": "BODY",
+          "path": "$.correlation"
+        },
+        {
+          "name": "samples",
+          "description": "Sample points",
+          "scope": "BODY",
+          "path": "$.samples"
+        }
+      ],
+      "id": 219,
+      "name": "Compute Correlation (Mock)",
+      "description": "Compute correlation between two metrics"
+    },
+    {
+      "url": "http://localhost:8070/mock/alerts/create",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": "{\"deviceId\": {{device_id}}, \"alertType\": {{alert_type}}, \"metric\": {{metric}}, \"threshold\": {{threshold}}, \"duration\": {{duration}}, \"params\": {{params}}}",
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [
+        {
+          "name": "device_id",
+          "description": "Device ID",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "alert_type",
+          "description": "Alert Type",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": "\"threshold\"",
+          "required": true
+        },
+        {
+          "name": "metric",
+          "description": "Metric name",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": false
+        },
+        {
+          "name": "threshold",
+          "description": "Threshold value",
+          "type": "NUMBER",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": false
+        },
+        {
+          "name": "duration",
+          "description": "Duration in seconds",
+          "type": "NUMBER",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": false
+        },
+        {
+          "name": "params",
+          "description": "Additional parameters",
+          "type": "OBJECT",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": false
+        }
+      ],
+      "outputs": [
+        {
+          "name": "alert_id",
+          "description": "Alert ID",
+          "scope": "BODY",
+          "path": "$.alertId"
+        },
+        {
+          "name": "message",
+          "description": "Message",
+          "scope": "BODY",
+          "path": "$.message"
+        }
+      ],
+      "id": 220,
+      "name": "Create Alert (Mock)",
+      "description": "Create threshold or predictive alert"
+    },
+    {
+      "url": "http://localhost:8070/mock/anomalies/get",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": "{\"deviceId\": {{device_id}}, \"metric\": {{metric}}, \"timestamp\": {{timestamp}}}",
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [
+        {
+          "name": "device_id",
+          "description": "Device ID",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "metric",
+          "description": "Metric name",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "timestamp",
+          "description": "Timestamp",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "name": "event_id",
+          "description": "Event ID",
+          "scope": "BODY",
+          "path": "$.eventId"
+        },
+        {
+          "name": "details",
+          "description": "Anomaly details",
+          "scope": "BODY",
+          "path": "$.details"
+        }
+      ],
+      "id": 221,
+      "name": "Get Anomaly (Mock)",
+      "description": "Retrieve anomaly/event details"
+    },
+    {
+      "url": "http://localhost:8070/mock/tickets/attach",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": "{\"ticketNumber\": {{ticket_number}}, \"attachmentType\": {{attachment_type}}, \"attachmentData\": {{attachment_data}}}",
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [
+        {
+          "name": "ticket_number",
+          "description": "Ticket Number",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "attachment_type",
+          "description": "Attachment Type",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": "\"chart\"",
+          "required": true
+        },
+        {
+          "name": "attachment_data",
+          "description": "Attachment Data",
+          "type": "OBJECT",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "name": "message",
+          "description": "Message",
+          "scope": "BODY",
+          "path": "$.message"
+        }
+      ],
+      "id": 222,
+      "name": "Attach to Ticket (Mock)",
+      "description": "Attach chart/data to ticket"
+    },
+    {
+      "url": "http://localhost:8070/mock/users/lookup",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": "{\"query\": {{query}}}",
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [
+        {
+          "name": "query",
+          "description": "User name or email",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "name": "user_id",
+          "description": "User ID",
+          "scope": "BODY",
+          "path": "$.userId"
+        },
+        {
+          "name": "user_name",
+          "description": "User Name",
+          "scope": "BODY",
+          "path": "$.userName"
+        },
+        {
+          "name": "user_email",
+          "description": "User Email",
+          "scope": "BODY",
+          "path": "$.userEmail"
+        }
+      ],
+      "id": 223,
+      "name": "Lookup User (Mock)",
+      "description": "Look up user by name or email"
+    },
+    {
+      "url": "http://localhost:8070/mock/tickets/update",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": "{\"ticketNumber\": {{ticket_number}}, \"assigneeId\": {{assignee_id}}, \"priority\": {{priority}}, \"status\": {{status}}}",
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [
+        {
+          "name": "ticket_number",
+          "description": "Ticket Number",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "assignee_id",
+          "description": "Assignee User ID",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": false
+        },
+        {
+          "name": "priority",
+          "description": "Priority",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": false
+        },
+        {
+          "name": "status",
+          "description": "Status",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": false
+        }
+      ],
+      "outputs": [
+        {
+          "name": "message",
+          "description": "Message",
+          "scope": "BODY",
+          "path": "$.message"
+        }
+      ],
+      "id": 224,
+      "name": "Update Ticket (Mock)",
+      "description": "Update ticket fields"
+    },
+    {
+      "url": "http://localhost:8070/mock/predictions/maintenance",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": "{\"deviceId\": {{device_id}}, \"horizonDays\": {{horizon_days}}}",
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [
+        {
+          "name": "device_id",
+          "description": "Device ID",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "horizon_days",
+          "description": "Forecast horizon in days",
+          "type": "NUMBER",
+          "authenticationId": null,
+          "defaultValue": 30,
+          "required": false
+        }
+      ],
+      "outputs": [
+        {
+          "name": "predicted_date",
+          "description": "Predicted Date",
+          "scope": "BODY",
+          "path": "$.predictedDate"
+        },
+        {
+          "name": "days_until_maintenance",
+          "description": "Days Until Maintenance",
+          "scope": "BODY",
+          "path": "$.daysUntilMaintenance"
+        },
+        {
+          "name": "confidence",
+          "description": "Confidence",
+          "scope": "BODY",
+          "path": "$.confidence"
+        }
+      ],
+      "id": 225,
+      "name": "Forecast Maintenance (Mock)",
+      "description": "Predict maintenance date"
+    },
+    {
+      "url": "http://localhost:8070/mock/tickets/schedule",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": "{\"deviceId\": {{device_id}}, \"scheduledDate\": {{scheduled_date}}, \"summary\": {{summary}}}",
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [
+        {
+          "name": "device_id",
+          "description": "Device ID",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "scheduled_date",
+          "description": "Scheduled Date",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "summary",
+          "description": "Ticket Summary",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "name": "ticket_number",
+          "description": "Ticket Number",
+          "scope": "BODY",
+          "path": "$.ticketNumber"
+        },
+        {
+          "name": "scheduled_for",
+          "description": "Scheduled For",
+          "scope": "BODY",
+          "path": "$.scheduledFor"
+        }
+      ],
+      "id": 226,
+      "name": "Create Scheduled Ticket (Mock)",
+      "description": "Create a scheduled maintenance ticket"
+    },
+    {
+      "url": "http://localhost:8070/mock/predictions/explain-health",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": "{\"deviceId\": {{device_id}}, \"date\": {{date}}}",
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [
+        {
+          "name": "device_id",
+          "description": "Device ID",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "date",
+          "description": "Date",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": false
+        }
+      ],
+      "outputs": [
+        {
+          "name": "health_score",
+          "description": "Health Score",
+          "scope": "BODY",
+          "path": "$.healthScore"
+        },
+        {
+          "name": "top_factors",
+          "description": "Top Contributing Factors",
+          "scope": "BODY",
+          "path": "$.topFactors"
+        }
+      ],
+      "id": 227,
+      "name": "Explain Health Score (Mock)",
+      "description": "Explain health score factors"
+    },
+    {
+      "url": "http://localhost:8070/mock/devices/compare",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": "{\"deviceIds\": {{device_ids}}, \"metric\": {{metric}}, \"startTime\": {{start_time}}, \"endTime\": {{end_time}}}",
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [
+        {
+          "name": "device_ids",
+          "description": "Device IDs",
+          "type": "ARRAY",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "metric",
+          "description": "Metric name",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "start_time",
+          "description": "Start Time",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "end_time",
+          "description": "End Time",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "name": "comparison",
+          "description": "Comparison Data",
+          "scope": "BODY",
+          "path": "$.comparison"
+        },
+        {
+          "name": "summary",
+          "description": "Summary",
+          "scope": "BODY",
+          "path": "$.summary"
+        }
+      ],
+      "id": 228,
+      "name": "Compare Devices (Mock)",
+      "description": "Compare metrics across devices"
+    },
+    {
+      "url": "http://localhost:8070/mock/create-password",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": "{\"email\": {{email}}, \"password\": {{password}}, \"profileKey\": {{profile_key}}}",
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [
+        {
+          "name": "email",
+          "description": "User email",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "password",
+          "description": "New password",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "profile_key",
+          "description": "Profile key",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": false
+        }
+      ],
+      "outputs": [
+        {
+          "name": "access_token",
+          "description": "Access token",
+          "scope": "BODY",
+          "path": "$.accessToken"
+        },
+        {
+          "name": "message",
+          "description": "Message",
+          "scope": "BODY",
+          "path": "$.message"
+        }
+      ],
+      "id": 229,
+      "name": "Create Password (Mock)",
+      "description": "Convert OTP trial account to password-based full account"
+    },
+    {
+      "url": "http://localhost:8070/mock/auth/status",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": "{\"sessionId\": {{session_id}}}",
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [
+        {
+          "name": "session_id",
+          "description": "Session unique id",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "name": "logged_in",
+          "description": "Logged in flag",
+          "scope": "BODY",
+          "path": "$.loggedIn"
+        },
+        {
+          "name": "email",
+          "description": "Email",
+          "scope": "BODY",
+          "path": "$.email"
+        }
+      ],
+      "id": 230,
+      "name": "Check Login Status (Mock)",
+      "description": "Check if session is logged in"
+    },
+    {
+      "url": "http://localhost:8070/mock/auth/login",
+      "urlParams": {},
+      "method": "POST",
+      "contentType": "JSON",
+      "userConfirmation": false,
+      "waitForUserResponse": false,
+      "requestBody": "{\"email\": {{email}}, \"password\": {{password}}, \"sessionId\": {{session_id}}}",
+      "headers": { "Content-Type": "application/json" },
+      "inputs": [
+        {
+          "name": "email",
+          "description": "User email",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "password",
+          "description": "Password",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": true
+        },
+        {
+          "name": "session_id",
+          "description": "Session unique id",
+          "type": "STRING",
+          "authenticationId": null,
+          "defaultValue": null,
+          "required": false
+        }
+      ],
+      "outputs": [
+        {
+          "name": "logged_in",
+          "description": "Logged in flag",
+          "scope": "BODY",
+          "path": "$.loggedIn"
+        },
+        {
+          "name": "session_id",
+          "description": "Session id",
+          "scope": "BODY",
+          "path": "$.sessionId"
+        },
+        {
+          "name": "email",
+          "description": "Email",
+          "scope": "BODY",
+          "path": "$.email"
+        }
+      ],
+      "id": 231,
+      "name": "Login (Mock)",
+      "description": "Login with email/password"
+    }
+  ],
+  "authentications": [
+    {
+      "id": 10,
+      "name": "Global C2M Access Token",
+      "type": "GLOBAL",
+      "value": "C2M_Token"
+    }
+  ]
+}

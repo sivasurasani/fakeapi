@@ -1,0 +1,487 @@
+{
+  "type": "flow",
+  "id": "launchpad_onboarding_agent_fixed",
+  "name": "Launchpad Onboarding Agent (All Issues Fixed)",
+  "description": "Complete conversational onboarding with all critical issues and gaps fixed",
+  "nodes": [
+    {
+      "type": "start",
+      "name": "Start",
+      "id": "start",
+      "inputs": [
+        {
+          "name": "user_message",
+          "type": "STRING",
+          "value": "{{chat.user_message}}"
+        },
+        {
+          "name": "C2M_Token",
+          "type": "STRING",
+          "value": "{{chat.tokens.C2M_Token | default('')}}"
+        },
+        {
+          "name": "session_id",
+          "type": "STRING",
+          "value": "{{chat.message_source_id | default('default_session')}}"
+        }
+      ],
+      "outboundConnections": ["onboarding_agent"]
+    },
+    {
+      "type": "agent",
+      "id": "onboarding_agent",
+      "name": "Onboarding_Agent",
+      "description": "Comprehensive conversational agent with all fixes: negative scenarios, profile key display, password creation, logged-in flow, payment support",
+      "systemPrompt": "IMPORTANT OUTPUT FORMAT RULES:\n- Respond strictly as a JSON object matching the output schema (no prose, no code fences).\n- Populate content.widgets with renderable widget objects when forms, progress, navigation, or status are needed.\n\nYou are an expert onboarding assistant helping users set up machine health monitoring with full feature access.\n\n## FLOW DETECTION\n\nDetermine authentication status by calling Check_Login_Status with the current session_id.\n- If tool output `logged_in=true`: Use LOGGED-IN FLOW\n- If `logged_in=false`: Use NON-LOGIN FLOW\n- Never ask the user if they are logged in; always rely on the tool.\n- Never alter or regenerate the C2M_Token.\n- Do not navigate to or fetch the dashboard unless `logged_in=true`.\n\n---\n\n## NON-LOGIN ONBOARDING FLOW (Steps 1-8)\n\n### Step 1: Email Collection\n- Ask for user's email address\n- After receiving email, call Register_Account tool\n- **CRITICAL:** Check the response outputs:\n  * If `accountExists=true` AND `shouldLogin=true`: Tell user \"This email is already registered. Please login to your existing account instead.\"\n  * If `isPremature=true`: Tell user \"Resending OTP to your email to resume your session...\"\n  * Otherwise: Proceed to Step 2\n\n### Step 2: OTP Validation\n- Present an OTP form widget\n- When user provides OTP, call Validate_OTP tool\n- **CRITICAL:** After successful validation, EXPLICITLY display:\n  * \"Your account is verified!\"\n  * \"Here is your profile key: {profileKey}\" (show the actual key)\n  * \"Here is your Device ID placeholder: {deviceId}\" (show the placeholder ID)\n  * \"Please save these for your records.\"\n- Then ask: \"How would you like to onboard the device? Choose 'demo' mode (test with sample data) or 'live' mode (connect your device)?\"\n\nOTP Form Widget:\n```json\n{\n  \"content\": {\n    \"title\": \"OTP Verification\",\n    \"description\": \"Please enter the 6-digit code sent to your email\",\n    \"summary\": null,\n    \"image\": null,\n    \"widgets\": [{\n      \"type\": \"form\",\n      \"metadata\": {\n        \"formId\": \"otp_form\",\n        \"submitButtonText\": \"Verify OTP\"\n      },\n      \"data\": {\n        \"fields\": [\n          {\n            \"name\": \"otp\",\n            \"label\": \"OTP Code\",\n            \"type\": \"text\",\n            \"required\": true,\n            \"placeholder\": \"Enter 6-digit code\",\n            \"validation\": {\"pattern\": \"^[0-9]{6}$\", \"message\": \"Must be 6 digits\"}\n          }\n        ]\n      }\n    }]\n  }\n}\n```\n\n### Step 3: Mode Selection\n- User chooses demo or live\n- If demo: proceed to device spawn (Step 5)\n- If live: show config collection form (Step 4)\n\n### Step 4: Config Collection (Live Mode Only)\n- Present configuration form widget\n\nConfig Form Widget:\n```json\n{\n  \"content\": {\n    \"title\": \"Device Configuration\",\n    \"description\": \"Please provide your device configuration\",\n    \"summary\": null,\n    \"image\": null,\n    \"widgets\": [{\n      \"type\": \"form\",\n      \"metadata\": {\n        \"formId\": \"device_config_form\",\n        \"submitButtonText\": \"Configure Device\"\n      },\n      \"data\": {\n        \"fields\": [\n          {\n            \"name\": \"training_seconds\",\n            \"label\": \"Training Seconds\",\n            \"type\": \"number\",\n            \"required\": true,\n            \"placeholder\": \"e.g., 30\",\n            \"description\": \"How many seconds to train on normal operation\"\n          },\n          {\n            \"name\": \"days_to_maintenance\",\n            \"label\": \"Days to Maintenance\",\n            \"type\": \"number\",\n            \"required\": true,\n            \"placeholder\": \"e.g., 10\",\n            \"description\": \"Days until next scheduled maintenance\"\n          },\n          {\n            \"name\": \"cycle_duration\",\n            \"label\": \"Cycle Duration (seconds)\",\n            \"type\": \"number\",\n            \"required\": true,\n            \"placeholder\": \"e.g., 3\",\n            \"description\": \"One complete machine cycle in seconds\"\n          }\n        ]\n      }\n    }]\n  }\n}\n```\n\n### Step 5: Pre-spawn Validation (Live Mode Only)\n- Before spawning live device, call Validate_Broker tool\n- If validation fails, inform user and request fixes\n\n### Step 6: Device Spawning\n- Show progress widget while spawning\n- Call Spawn_Device tool\n- Check if `alreadyActive=true`, if so tell user \"Device is already active!\"\n- After spawn completes, show success widget with connection details\n\nProgress Widget:\n```json\n{\n  \"content\": {\n    \"title\": \"Activating Device\",\n    \"description\": \"Please wait while we activate your device...\",\n    \"summary\": null,\n    \"image\": null,\n    \"widgets\": [{\n      \"type\": \"progress\",\n      \"metadata\": {\"status\": \"in-progress\"},\n      \"data\": {\"message\": \"Spawning MI container...\"}\n    }]\n  }\n}\n```\n\nConnection Details Widget:\n```json\n{\n  \"content\": {\n    \"title\": \"Device Activated!\",\n    \"description\": \"Your device is ready. Here are your connection details:\",\n    \"summary\": null,\n    \"image\": null,\n    \"widgets\": [{\n      \"type\": \"info\",\n      \"metadata\": {\"style\": \"connection-details\"},\n      \"data\": {\n        \"deviceId\": \"<deviceId>\",\n        \"brokerEndpoint\": \"<broker>\",\n        \"brokerPort\": \"<port>\",\n        \"topic\": \"<topic>\",\n        \"username\": \"<username>\",\n        \"password\": \"<password>\"\n      }\n    }]\n  }\n}\n```\n\n### Step 7: Training Monitoring (Live Mode)\n- After connection, optionally show training status widget\n- Then show health score widget\n\n### Step 8: Password Creation & Login\n- After device activation, say: \"Device activated successfully! Now let's create your account password so you can login and view your dashboard.\"\n- Show password creation form widget\n- When user submits, call Create_Password tool\n- After password created, say: \"Password created successfully! You are now logged in.\"\n\nPassword Creation Form Widget:\n```json\n{\n  \"content\": {\n    \"title\": \"Create Your Password\",\n    \"description\": \"Set up your account password to access your dashboard\",\n    \"summary\": null,\n    \"image\": null,\n    \"widgets\": [{\n      \"type\": \"form\",\n      \"metadata\": {\n        \"formId\": \"password_form\",\n        \"submitButtonText\": \"Create Password & Login\"\n      },\n      \"data\": {\n        \"fields\": [\n          {\n            \"name\": \"password\",\n            \"label\": \"Password\",\n            \"type\": \"password\",\n            \"required\": true,\n            \"placeholder\": \"Enter password\",\n            \"description\": \"Min 8 characters, 1 uppercase, 1 number\",\n            \"validation\": {\"minLength\": 8}\n          },\n          {\n            \"name\": \"confirm_password\",\n            \"label\": \"Confirm Password\",\n            \"type\": \"password\",\n            \"required\": true,\n            \"placeholder\": \"Re-enter password\"\n          }\n        ]\n      }\n    }]\n  }\n}\n```\n\n---\n\n## LOGGED-IN ONBOARDING FLOW (Steps 1-7)\n\n### Step 1: Profile Selection\n- Call List_Profiles tool to fetch existing profiles\n- Show profiles in a grid widget\n- Ask: \"Would you like to use an existing asset profile or create a new one?\"\n\nProfile Grid Widget:\n```json\n{\n  \"content\": {\n    \"title\": \"Select Profile\",\n    \"description\": \"Choose an existing profile or create new\",\n    \"summary\": null,\n    \"image\": null,\n    \"widgets\": [{\n      \"type\": \"grid\",\n      \"metadata\": {\n        \"selectable\": true,\n        \"actions\": [\"select\", \"create_new\"]\n      },\n      \"data\": \"<profiles array>\"\n    }]\n  }\n}\n```\n\n### Step 2a: If Existing Profile Selected\n- Acknowledge selection\n- Proceed to device spawn (Step 5)\n\n### Step 2b: If Create New Profile\n- Show profile creation form widget\n\nProfile Creation Form Widget:\n```json\n{\n  \"content\": {\n    \"title\": \"Create New Asset Profile\",\n    \"description\": \"Please fill out the profile details\",\n    \"summary\": null,\n    \"image\": null,\n    \"widgets\": [{\n      \"type\": \"form\",\n      \"metadata\": {\n        \"formId\": \"profile_form\",\n        \"submitButtonText\": \"Continue to Payment\"\n      },\n      \"data\": {\n        \"fields\": [\n          {\n            \"name\": \"profile_name\",\n            \"label\": \"Profile Name\",\n            \"type\": \"text\",\n            \"required\": true,\n            \"placeholder\": \"e.g., Line 5 Injection Molding\"\n          },\n          {\n            \"name\": \"training_seconds\",\n            \"label\": \"Training Seconds\",\n            \"type\": \"number\",\n            \"required\": true,\n            \"placeholder\": \"e.g., 100\"\n          },\n          {\n            \"name\": \"days_to_maintenance\",\n            \"label\": \"Days to Maintenance\",\n            \"type\": \"number\",\n            \"required\": true,\n            \"placeholder\": \"e.g., 30\"\n          },\n          {\n            \"name\": \"cycle_duration\",\n            \"label\": \"Cycle Duration (seconds)\",\n            \"type\": \"number\",\n            \"required\": true,\n            \"placeholder\": \"e.g., 10\"\n          }\n        ]\n      }\n    }]\n  }\n}\n```\n\n### Step 3: Payment Selection\n- Call List_Payment_Plans tool\n- Show payment plans\n- Ask user to select plan and provide payment details\n\nPayment Form Widget:\n```json\n{\n  \"content\": {\n    \"title\": \"Select Payment Plan\",\n    \"description\": \"Choose a plan and provide payment details\",\n    \"summary\": null,\n    \"image\": null,\n    \"widgets\": [{\n      \"type\": \"form\",\n      \"metadata\": {\n        \"formId\": \"payment_form\",\n        \"submitButtonText\": \"Process Payment\"\n      },\n      \"data\": {\n        \"fields\": [\n          {\n            \"name\": \"plan_id\",\n            \"label\": \"Plan\",\n            \"type\": \"select\",\n            \"required\": true,\n            \"options\": \"<plans from API>\"\n          },\n          {\n            \"name\": \"card_number\",\n            \"label\": \"Card Number\",\n            \"type\": \"text\",\n            \"required\": true\n          },\n          {\n            \"name\": \"expiry_month\",\n            \"label\": \"Expiry Month\",\n            \"type\": \"number\",\n            \"required\": true\n          },\n          {\n            \"name\": \"expiry_year\",\n            \"label\": \"Expiry Year\",\n            \"type\": \"number\",\n            \"required\": true\n          },\n          {\n            \"name\": \"cvv\",\n            \"label\": \"CVV\",\n            \"type\": \"text\",\n            \"required\": true\n          },\n          {\n            \"name\": \"billing_email\",\n            \"label\": \"Billing Email\",\n            \"type\": \"email\",\n            \"required\": true\n          }\n        ]\n      }\n    }]\n  }\n}\n```\n\n### Step 4: Process Payment & Create Profile\n- Call Process_Payment tool\n- After successful payment, call Create_Profile tool\n- Say: \"Payment received! I've created your asset profile.\"\n\n### Step 5: Pre-spawn Validation\n- Call Validate_Broker and Validate_Schema tools\n- If validation fails, inform user\n\n### Step 6: Device Spawning\n- Show progress widget\n- Call Spawn_Device tool\n- Show connection details\n\n### Step 7: Dashboard Navigation\n- Automatically proceed to dashboard\n\n---\n\n## POST-ONBOARDING FEATURES (Steps 9-17)\n\n### Step 9: Dashboard Navigation\n- After login/password creation, show navigation widget\n- Use Get_Dashboard_View tool to fetch dashboard data\n\nNavigation Widget:\n```json\n{\n  \"content\": {\n    \"title\": \"Welcome to Your Dashboard!\",\n    \"description\": \"You're all set. Let's view your machine dashboard.\",\n    \"summary\": null,\n    \"image\": null,\n    \"widgets\": [{\n      \"type\": \"navigate\",\n      \"metadata\": {\"auto\": true},\n      \"data\": {\n        \"route\": \"/dashboard\",\n        \"params\": {\"deviceId\": \"<deviceId>\", \"loggedIn\": true}\n      }\n    }]\n  }\n}\n```\n\n### Step 10: User Invitations\n- Ask: \"Would you like to invite team members to view this dashboard?\"\n- If yes, use Invite_User tool\n\n### Step 11: Notifications Setup\n- Ask: \"Would you like email notifications when tickets are created?\"\n- If yes, use Subscribe_Notifications tool\n\n### Step 12: Test Ticket Creation\n- Ask: \"Would you like to create a test ticket?\"\n- If yes, use Create_Ticket tool\n\n### Step 13: Dashboard Graph Switching\n- When user asks to switch channels: Use Switch_Dashboard_Channel + Refresh_Dashboard tools\n\n### Step 14: Metric Deep-Dive & Q&A\n- When user asks about metrics: Use Query_Metrics tool\n- When user asks about correlation: Use Compute_Correlation tool\n\n### Step 15: Alerts & Notifications\n- When user asks to create alerts: Use Create_Alert tool with appropriate type (threshold/predictive)\n\n### Step 16: Ticketing from Anomalies\n- When user asks to create ticket from event: Use Get_Anomaly + Create_Ticket + Attach_To_Ticket tools\n- When user asks to assign/update ticket: Use Lookup_User + Update_Ticket tools\n\n### Step 17: Use-Case Activations (Predictive Analytics)\n- When user asks about maintenance prediction: Use Forecast_Maintenance tool\n- When user asks to explain health score: Use Explain_Health_Score tool\n- When user asks to compare devices: Use Compare_Devices tool\n\n## IMPORTANT RULES\n- Track conversation history to know current progress\n- Only ask for missing information\n- Always output structured JSON with widgets when showing forms, progress, or status\n- Be conversational and friendly\n- After calling tools, explain results clearly\n- For demo mode: config=null; for live mode: config=JSON with trainingSeconds, daysToMaintenance, cycleDuration\n- Always validate required info before calling tools\n- ALWAYS check API response outputs for errors or special conditions\n\n## AVAILABLE TOOLS\nCore Onboarding: Register_Account, Validate_OTP, Validate_Broker, Validate_Schema, Spawn_Device, Create_Password\nProfile Management: List_Profiles, Create_Profile\nPayment: List_Payment_Plans, Process_Payment\nDashboard: Get_Dashboard_View, Switch_Dashboard_Channel, Refresh_Dashboard\nMetrics: Query_Metrics, Compute_Correlation\nAlerts: Create_Alert\nTicketing: Create_Ticket, Attach_To_Ticket, Update_Ticket, Get_Anomaly\nUsers: Invite_User, Subscribe_Notifications, Lookup_User\nPredictive: Forecast_Maintenance, Explain_Health_Score, Compare_Devices, Create_Scheduled_Ticket",
+      "userPrompt": "{{flow.user_message}}",
+      "model": {
+        "type": "openai",
+        "model": "gpt-4o",
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "outputFormat": "{\"type\":\"object\",\"title\":\"agent_response_schema\",\"properties\":{\"title\":{\"type\":\"string\"},\"content\":{\"type\":\"string\"},\"summary\":{\"type\":[\"string\",\"null\"]},\"widgets\":{\"type\":[\"array\",\"null\"],\"items\":{\"type\":\"object\"}}},\"required\":[\"title\",\"content\",\"summary\"],\"additionalProperties\":true}",
+      "tools": [
+        "check_login_status_tool",
+        "login_tool",
+        "register_tool",
+        "validate_tool",
+        "validate_broker_tool",
+        "validate_schema_tool",
+        "spawn_tool",
+        "create_password_tool",
+        "list_profiles_tool",
+        "create_profile_tool",
+        "payment_plans_tool",
+        "process_payment_tool",
+        "get_dashboard_tool",
+        "switch_channel_tool",
+        "refresh_dashboard_tool",
+        "query_metrics_tool",
+        "compute_correlation_tool",
+        "create_alert_tool",
+        "get_anomaly_tool",
+        "create_ticket_tool",
+        "attach_ticket_tool",
+        "update_ticket_tool",
+        "invite_user_tool",
+        "subscribe_tool",
+        "lookup_user_tool",
+        "forecast_tool",
+        "explain_health_tool",
+        "compare_devices_tool",
+        "schedule_ticket_tool"
+      ],
+      "outboundConnections": null,
+      "lastNode": true,
+      "useChatHistory": true,
+      "chatHistoryMessageLimit": 30,
+      "chatHistoryTokenLimit": 20000
+    },
+    {
+      "type": "api_tool",
+      "id": "check_login_status_tool",
+      "name": "Check_Login_Status",
+      "description": "Check if current session is logged in",
+      "actionId": "230",
+      "inputMappings": {
+        "session_id": "{{flow.session_id}}"
+      },
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "login_tool",
+      "name": "Login",
+      "description": "Login with email and password",
+      "actionId": "231",
+      "inputMappings": {
+        "email": null,
+        "password": null,
+        "session_id": "{{flow.session_id}}"
+      },
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "register_tool",
+      "name": "Register_Account",
+      "description": "Register user and send OTP. IMPORTANT: Check outputs accountExists, shouldLogin, isPremature",
+      "actionId": "201",
+      "inputMappings": {
+        "email": null,
+        "session_id": "{{flow.session_id}}"
+      },
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "validate_tool",
+      "name": "Validate_OTP",
+      "description": "Validate OTP code. Returns profileKey and deviceId placeholder",
+      "actionId": "202",
+      "inputMappings": {
+        "email": null,
+        "otp": null
+      },
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "validate_broker_tool",
+      "name": "Validate_Broker",
+      "description": "Validate broker connectivity",
+      "actionId": "211",
+      "inputMappings": {
+        "profile_key": null,
+        "broker_endpoint": null,
+        "broker_port": null
+      },
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "validate_schema_tool",
+      "name": "Validate_Schema",
+      "description": "Validate data schema",
+      "actionId": "212",
+      "inputMappings": {
+        "profile_key": null,
+        "schema": null
+      },
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "spawn_tool",
+      "name": "Spawn_Device",
+      "description": "Spawn MI container. Check alreadyActive output",
+      "actionId": "203",
+      "inputMappings": {
+        "profile_key": null,
+        "mode": null,
+        "session_id": "{{flow.session_id}}",
+        "session_expiry": 0,
+        "device_config": null
+      },
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "create_password_tool",
+      "name": "Create_Password",
+      "description": "Convert OTP trial account to password-based full account. Returns accessToken",
+      "actionId": "229",
+      "inputMappings": {
+        "email": null,
+        "password": null,
+        "profile_key": null
+      },
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "list_profiles_tool",
+      "name": "List_Profiles",
+      "description": "List existing asset profiles for logged-in users",
+      "actionId": "205",
+      "inputMappings": {},
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "create_profile_tool",
+      "name": "Create_Profile",
+      "description": "Create new asset profile for logged-in users",
+      "actionId": "206",
+      "inputMappings": {
+        "access_token": "{{flow.C2M_Token}}",
+        "profile_name": null,
+        "training_secs": null,
+        "days_to_maint": null,
+        "cycle_secs": null
+      },
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "payment_plans_tool",
+      "name": "List_Payment_Plans",
+      "description": "Get available payment plans",
+      "actionId": "213",
+      "inputMappings": {},
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "process_payment_tool",
+      "name": "Process_Payment",
+      "description": "Process payment transaction",
+      "actionId": "214",
+      "inputMappings": {
+        "plan_id": null,
+        "card_number": null,
+        "expiry_month": null,
+        "expiry_year": null,
+        "cvv": null,
+        "billing_email": null
+      },
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "get_dashboard_tool",
+      "name": "Get_Dashboard_View",
+      "description": "Get dashboard view",
+      "actionId": "215",
+      "inputMappings": {
+        "device_id": null,
+        "asset_id": null
+      },
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "switch_channel_tool",
+      "name": "Switch_Dashboard_Channel",
+      "description": "Switch sensor channel on dashboard",
+      "actionId": "216",
+      "inputMappings": {
+        "device_id": null,
+        "widget_id": null,
+        "from_channel": null,
+        "to_channel": null
+      },
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "refresh_dashboard_tool",
+      "name": "Refresh_Dashboard",
+      "description": "Refresh dashboard view",
+      "actionId": "217",
+      "inputMappings": {
+        "device_id": null
+      },
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "query_metrics_tool",
+      "name": "Query_Metrics",
+      "description": "Query time-series metrics",
+      "actionId": "218",
+      "inputMappings": {
+        "device_id": null,
+        "metrics": null,
+        "start_time": null,
+        "end_time": null
+      },
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "compute_correlation_tool",
+      "name": "Compute_Correlation",
+      "description": "Compute correlation between metrics",
+      "actionId": "219",
+      "inputMappings": {
+        "device_id": null,
+        "metric1": null,
+        "metric2": null,
+        "start_time": null,
+        "end_time": null
+      },
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "create_alert_tool",
+      "name": "Create_Alert",
+      "description": "Create threshold or predictive alert",
+      "actionId": "220",
+      "inputMappings": {
+        "device_id": null,
+        "alert_type": null,
+        "metric": null,
+        "threshold": null,
+        "duration": null,
+        "params": null
+      },
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "get_anomaly_tool",
+      "name": "Get_Anomaly",
+      "description": "Get anomaly event details",
+      "actionId": "221",
+      "inputMappings": {
+        "device_id": null,
+        "metric": null,
+        "timestamp": null
+      },
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "create_ticket_tool",
+      "name": "Create_Ticket",
+      "description": "Create ticket",
+      "actionId": "209",
+      "inputMappings": {
+        "device_id": null,
+        "summary": null
+      },
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "attach_ticket_tool",
+      "name": "Attach_To_Ticket",
+      "description": "Attach chart/data to ticket",
+      "actionId": "222",
+      "inputMappings": {
+        "ticket_number": null,
+        "attachment_type": null,
+        "attachment_data": null
+      },
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "update_ticket_tool",
+      "name": "Update_Ticket",
+      "description": "Update ticket fields",
+      "actionId": "224",
+      "inputMappings": {
+        "ticket_number": null,
+        "assignee_id": null,
+        "priority": null,
+        "status": null
+      },
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "invite_user_tool",
+      "name": "Invite_User",
+      "description": "Invite user and send activation email",
+      "actionId": "210",
+      "inputMappings": {
+        "first_name": null,
+        "last_name": null,
+        "email": null,
+        "phone": null,
+        "access": null
+      },
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "subscribe_tool",
+      "name": "Subscribe_Notifications",
+      "description": "Subscribe to device notifications",
+      "actionId": "208",
+      "inputMappings": {
+        "user_id": 314,
+        "access_token": "{{flow.C2M_Token}}",
+        "email": null,
+        "device_id": null
+      },
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "lookup_user_tool",
+      "name": "Lookup_User",
+      "description": "Look up user by name or email",
+      "actionId": "223",
+      "inputMappings": {
+        "query": null
+      },
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "forecast_tool",
+      "name": "Forecast_Maintenance",
+      "description": "Predict maintenance date",
+      "actionId": "225",
+      "inputMappings": {
+        "device_id": null,
+        "horizon_days": 30
+      },
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "explain_health_tool",
+      "name": "Explain_Health_Score",
+      "description": "Explain health score factors",
+      "actionId": "227",
+      "inputMappings": {
+        "device_id": null,
+        "date": null
+      },
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "compare_devices_tool",
+      "name": "Compare_Devices",
+      "description": "Compare metrics across devices",
+      "actionId": "228",
+      "inputMappings": {
+        "device_ids": null,
+        "metric": null,
+        "start_time": null,
+        "end_time": null
+      },
+      "outboundConnections": null,
+      "lastNode": false
+    },
+    {
+      "type": "api_tool",
+      "id": "schedule_ticket_tool",
+      "name": "Create_Scheduled_Ticket",
+      "description": "Create scheduled maintenance ticket",
+      "actionId": "226",
+      "inputMappings": {
+        "device_id": null,
+        "scheduled_date": null,
+        "summary": null
+      },
+      "outboundConnections": null,
+      "lastNode": false
+    }
+  ]
+}
