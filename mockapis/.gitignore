@@ -1,0 +1,28 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment footprint (created locally for mock server)
+bin/
+Lib/
+lib/
+lib64/
+include/
+Scripts/
+pyvenv.cfg
+share/
+.venv/
+venv/
+env/
+.python-version
+pip-selfcheck.json
+
+# Tool caches
+.mypy_cache/
+.pytest_cache/
+
+# Editor / OS cruft
+.idea/
+.vscode/
+.DS_Store
